@@ -1,0 +1,6 @@
+{
+	"name": "redux-async-generator/async-data",
+	"private": true,
+	"main": "../lib/async-data/index.js",
+	"module": "../es/async-data/index.js"
+}
