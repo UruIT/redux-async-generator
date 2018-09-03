@@ -150,3 +150,7 @@ const defaultState = { data: [] }; // initial data
 
 export default createReducer(defaultState, actions);
 ```
+
+# Documentation
+
+-   [API Reference](docs/api.md)
