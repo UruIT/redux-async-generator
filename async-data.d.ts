@@ -10,41 +10,47 @@ export interface ActionTypes {
 export interface Action {
 	type: string;
 }
-export interface ActionError extends Action {
-	error: any;
+export interface ActionError<TError> extends Action {
+	error: TError;
 }
-export interface ActionSucceeded extends Action {
-	data: any;
+export interface ActionSucceeded<TData> extends Action {
+	data: TData;
 }
-export interface ActionReplace extends Action {
-	state: any;
+export interface ActionReplace<TState> extends Action {
+	state: TState;
 }
 
 export type FuncRequested = (params) => Action;
-export type FuncFailed = (error) => ActionError;
-export type FuncSucceeded = (data) => ActionSucceeded;
+export type FuncFailed<TError> = (error: TError) => ActionError<TError>;
+export type FuncSucceeded<TData> = (data: TData) => ActionSucceeded<TData>;
 export type FuncReset = () => Action;
-export type FuncReplace = (state) => ActionReplace;
+export type FuncReplace<TState> = (state: TState) => ActionReplace<TState>;
 
-export interface AsyncDataActions {
+export interface AsyncDataActions<TData, TError, TState> {
 	actions: ActionTypes;
 	requested: FuncRequested;
-	failed: FuncFailed;
-	succeeded: FuncSucceeded;
+	failed: FuncFailed<TError>;
+	succeeded: FuncSucceeded<TData>;
 	reset: FuncReset;
 	retry: FuncRequested;
-	replace: FuncReplace;
+	replace: FuncReplace<TState>;
 }
 
-export function createActions(PREFIX: string): AsyncDataActions;
+export function createActions<TData, TError, TState>(PREFIX: string): AsyncDataActions<TData, TError, TState>;
 
-export interface AsyncDataState {
-	data: any;
+export interface AsyncDataState<TData, TError> {
+	data: TData;
 	requesting: boolean;
 	succeeded: boolean;
-	error: any;
+	error: TError;
 }
 
-export type FuncAsyncDataReducer = (state: AsyncDataState, action: Action) => AsyncDataState;
+export type FuncAsyncDataReducer<TData, TError> = (
+	state: AsyncDataState<TData, TError>,
+	action: Action
+) => AsyncDataState<TData, TError>;
 
-export function createReducer(defaultState: AsyncDataState, actions: ActionTypes): FuncAsyncDataReducer;
+export function createReducer<TData, TError>(
+	defaultState: AsyncDataState<TData, TError>,
+	actions: ActionTypes
+): FuncAsyncDataReducer<TData, TError>;
