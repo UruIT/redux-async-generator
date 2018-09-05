@@ -17,7 +17,7 @@ const updateDataForName = (data, path, value) => {
 };
 
 export const updateData = ({ data }, { name, value }) => {
-	data = JSON.parse(JSON.stringify(data));
+	data = merge.recursive(true, data);
 	updateDataForName(data, name.split(separator), value);
 	return data;
 };
