@@ -1,4 +1,4 @@
-export interface ActionTypes {
+export interface AsyncDataActionTypes {
 	REQUESTED: string;
 	FAILED: string;
 	SUCCEEDED: string;
@@ -27,7 +27,7 @@ export type FuncReset = () => Action;
 export type FuncReplace<TState> = (state: TState) => ActionReplace<TState>;
 
 export interface AsyncDataActions<TData, TError, TState> {
-	actions: ActionTypes;
+	actions: AsyncDataActionTypes;
 	requested: FuncRequested;
 	failed: FuncFailed<TError>;
 	succeeded: FuncSucceeded<TData>;
@@ -52,5 +52,5 @@ export type FuncAsyncDataReducer<TData, TError> = (
 
 export function createReducer<TData, TError>(
 	defaultState: AsyncDataState<TData, TError>,
-	actions: ActionTypes
+	actions: AsyncDataActionTypes
 ): FuncAsyncDataReducer<TData, TError>;
