@@ -18,7 +18,7 @@ $ yarn add redux-async-generator
 
 ## Example
 
-Let's say you have a React Component -you're working with Redux (+ redux-saga or else)-, that needs to load a resource from an api once the component mounts, you'll probably need to write the following:
+Let's say you have a React Component -you're working with Redux (+ redux-saga or similar)-, that needs to load a resource from an api once the component mounts, you'll probably need to write the following:
 
 ### `component.actions.js`
 
