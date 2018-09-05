@@ -1,3 +1,5 @@
+import merge from 'merge'
+
 export const createReducer = (defaultState, actions) => {
 	const DEFAULT_STATE = {
 		requesting: false,
@@ -7,17 +9,16 @@ export const createReducer = (defaultState, actions) => {
 		switch (action.type) {
 			case actions.REQUESTED:
 			case actions.RETRY:
-				return { ...state, requesting: true, succeeded: false }
+				return merge.recursive(true, state, { requesting: true, succeeded: false })
 			case actions.SUCCEEDED:
-				return {
-					...state,
+				return merge.recursive(true, state, {
 					requesting: false,
 					succeeded: true,
 					data: action.data || state.data,
 					error: null
-				}
+				})
 			case actions.FAILED:
-				return { ...state, requesting: false, error: action.error }
+				return merge.recursive(true, state, { requesting: false, error: action.error })
 			case actions.REPLACE:
 				return action.state
 			case actions.RESET:

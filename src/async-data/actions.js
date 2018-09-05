@@ -1,3 +1,5 @@
+import merge from 'merge'
+
 export const actionTypes = ['REQUESTED', 'RETRY', 'SUCCEEDED', 'FAILED', 'REPLACE', 'RESET']
 
 export const createActionTypes = (actionTypes, prefix) =>
@@ -6,10 +8,10 @@ export const createActionTypes = (actionTypes, prefix) =>
 export const createActions = prefix => {
 	const actions = createActionTypes(actionTypes, prefix)
 	return {
-		requested: params => ({
-			...params,
-			type: actions.REQUESTED
-		}),
+		requested: params =>
+			merge.recursive(true, params, {
+				type: actions.REQUESTED
+			}),
 		retry: params => ({
 			...params,
 			type: actions.RETRY
