@@ -42,7 +42,9 @@
 	"bugs": {
 		"url": "https://github.com/uruit/redux-async-generator/issues"
 	},
-	"dependencies": {},
+	"dependencies": {
+		"merge": "^1.2.0"
+	},
 	"devDependencies": {
 		"babel-cli": "^6.1.18",
 		"babel-core": "^6.21.0",

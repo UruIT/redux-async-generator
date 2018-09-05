@@ -1,3 +1,3 @@
-const a = 'hello';
+import * as asyncData from './async-data'
 
-export { a };
+export { asyncData }
