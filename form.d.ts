@@ -1,6 +1,6 @@
 import { AsyncDataActionTypes, AsyncDataActions, Action, AsyncDataState } from './async-data';
 
-export interface AsyncFormActionTypes extends AsyncDataActionTypes {
+export interface FormActionTypes extends AsyncDataActionTypes {
 	CHANGE: string;
 	SETDATA: string;
 	SETNONDATA: string;
@@ -21,8 +21,8 @@ export type FuncChange = ({ name: string, value: any }) => ActionChange;
 export type FuncSetData<TData> = (data: TData) => ActionSetData<TData>;
 export type FuncSetNonData = (nonData: Object) => ActionSetNonData;
 
-export interface AsyncFormActions<TData, TError, TState> extends AsyncDataActions<TData, TError, TState> {
-	actions: AsyncFormActionTypes;
+export interface FormActions<TData, TError, TState> extends AsyncDataActions<TData, TError, TState> {
+	actions: FormActionTypes;
 	change: FuncChange;
 	setData: FuncSetData<TData>;
 	setNonData: FuncSetNonData;
@@ -30,29 +30,29 @@ export interface AsyncFormActions<TData, TError, TState> extends AsyncDataAction
 
 export function createActions<TData, TError, TState>(PREFIX: string): AsyncDataActions<TData, TError, TState>;
 
-export interface AsyncFormFields<TData> {}
+export interface FormFields<TData> {}
 
-export interface AsyncFormState<TData, TError> extends AsyncDataState<TData, TError> {
+export interface FormState<TData, TError> extends AsyncDataState<TData, TError> {
 	requested: boolean;
-	fields: AsyncFormFields<TData>;
+	fields: FormFields<TData>;
 }
 
-export interface AsyncFormValidation<TData> {}
+export interface FormValidation<TData> {}
 
-export type FuncAsyncFormValidate<TData, TError> = (
+export type FuncFormValidate<TData, TError> = (
 	data: TData,
 	requested: boolean,
-	state: AsyncFormState<TData, TError>
-) => AsyncFormValidation<TData>;
+	state: FormState<TData, TError>
+) => FormValidation<TData>;
 
-export type FuncAsyncFormReducer<TData, TError> = (
-	state: AsyncFormState<TData, TError>,
+export type FuncFormReducer<TData, TError> = (
+	state: FormState<TData, TError>,
 	action: Action
-) => AsyncFormState<TData, TError>;
+) => FormState<TData, TError>;
 
 export function createReducer<TData, TError>(
 	defaultData: TData,
-	actions: AsyncFormActionTypes,
-	validate: FuncAsyncFormValidate<TData, TError>,
+	actions: FormActionTypes,
+	validate: FuncFormValidate<TData, TError>,
 	defaultNonData: any
-): FuncAsyncFormReducer<TData, TError>;
+): FuncFormReducer<TData, TError>;

@@ -1,6 +1,6 @@
 import { forKeys } from '../utils/object';
-import { createReducer as createDefaultReducer } from '../async-data/reducer';
 import merge from 'merge';
+import { createReducer as defaultCreateReducer } from '../utils/reducer';
 
 export const addDataToState = (state, data) => merge.recursive(true, state, { data });
 
@@ -40,32 +40,33 @@ export const dataToFields = (data, validation, prefix = '') => {
 	}
 };
 
-export const createFields = (data, requested, validate, state) => {
-	return dataToFields(data, validate(data, requested, state));
+export const createFields = (data, submitted, validate, state) => {
+	return dataToFields(data, validate(data, submitted, state));
 };
 
-export const addFieldsToState = (state, data, requested, validate) => ({
+export const addFieldsToState = (state, data, submitted, validate) => ({
 	...state,
-	fields: createFields(data, requested, validate, state)
+	fields: createFields(data, submitted, validate, state)
 });
 
 export const addToState = (state, data, validate) => {
 	state = addDataToState(state, data);
-	state = addFieldsToState(state, selectData(state), state.requested, validate);
+	state = addFieldsToState(state, selectData(state), state.submitted, validate);
 	return state;
 };
 
 export const createReducer = (defaultData, actions, validate, defaultNonData = {}) => {
 	const DEFAULT_STATE = addToState(
 		{
-			requesting: false,
+			submitting: false,
 			...defaultNonData
 		},
 		defaultData,
 		validate
 	);
-	const defaultReducer = createDefaultReducer(DEFAULT_STATE, actions);
-	return (state = DEFAULT_STATE, action) => {
+	const defaultReducer = defaultCreateReducer(DEFAULT_STATE, actions);
+
+	return function(state, action) {
 		switch (action.type) {
 			case actions.SETDATA:
 				return addToState(state, action.data, validate);
@@ -73,9 +74,24 @@ export const createReducer = (defaultData, actions, validate, defaultNonData = {
 				return addToState(state, updateData(state, action), validate);
 			case actions.SETNONDATA:
 				return merge.recursive(true, state, action.nonData);
-			case actions.REQUESTED:
-				state = defaultReducer(state, action);
-				return addToState({ ...state, requested: true }, selectData(state), validate);
+			case actions.SUBMITTED:
+				return addToState(
+					merge.recursive(true, state, { submitted: true, submitting: true, error: null }),
+					selectData(state),
+					validate
+				);
+			case actions.FAILED:
+				return addToState(
+					merge.recursive(true, defaultReducer(state, action), { submitting: false }),
+					selectData(state),
+					validate
+				);
+			case actions.SUCCEEDED:
+				return addToState(
+					merge.recursive(true, state, { submitting: false, result: action.result }),
+					selectData(state),
+					validate
+				);
 			default:
 				return defaultReducer(state, action);
 		}

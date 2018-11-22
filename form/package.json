@@ -1,0 +1,6 @@
+{
+	"name": "redux-async-generator/form",
+	"private": true,
+	"main": "../lib/form/index.js",
+	"module": "../es/form/index.js"
+}

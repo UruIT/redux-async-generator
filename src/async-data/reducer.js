@@ -1,30 +1,27 @@
-import merge from 'merge'
+import merge from 'merge';
+import { createReducer as defaultCreateReducer } from '../utils/reducer';
 
 export const createReducer = (defaultState, actions) => {
 	const DEFAULT_STATE = {
 		requesting: false,
 		...defaultState
-	}
-	return (state = DEFAULT_STATE, action) => {
+	};
+	const defaultReducer = defaultCreateReducer(DEFAULT_STATE, actions);
+
+	return function(state, action) {
 		switch (action.type) {
 			case actions.REQUESTED:
 			case actions.RETRY:
-				return merge.recursive(true, state, { requesting: true, succeeded: false })
+				return merge.recursive(true, DEFAULT_STATE, { requesting: true });
 			case actions.SUCCEEDED:
-				return merge.recursive(true, state, {
+				return merge.recursive(true, defaultReducer(state, action), {
 					requesting: false,
-					succeeded: true,
-					data: action.data || state.data,
-					error: null
-				})
+					data: action.data || state.data
+				});
 			case actions.FAILED:
-				return merge.recursive(true, state, { requesting: false, error: action.error })
-			case actions.REPLACE:
-				return action.state
-			case actions.RESET:
-				return DEFAULT_STATE
+				return merge.recursive(true, defaultReducer(state, action), { requesting: false });
 			default:
-				return state
+				return defaultReducer(state, action);
 		}
-	}
-}
+	};
+};

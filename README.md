@@ -157,7 +157,7 @@ const defaultState = { data: [] }; // initial data
 export default createReducer(defaultState, actions);
 ```
 
-## Async Form
+## Form
 
 ### Example
 
@@ -166,7 +166,7 @@ While working with forms in React we found that handling their state in the comp
 #### `Form.js`
 
 ```javascript
-import { hasErrors } from 'redux-async-generator/async-form';
+import { hasErrors } from 'redux-async-generator/form';
 
 class Form extends React.Component {
     constructor(props) {
@@ -208,7 +208,11 @@ class Form extends React.Component {
         event.preventDefault();
         if (Object.values(state.errors).filter(a => a).length) {
             // call some api to complete action
-            this.props.submit(this.state);
+            this.props.submit(this.state).then(
+                // show success message
+            ).catch(
+                // show error message
+            );
         }
     }
 
@@ -243,37 +247,9 @@ class Form extends React.Component {
 
 Instead of using component's state, we use the redux store state, actions to trigger the changes and a validation function tied to the reducer to update the errors.
 
-#### `form.actions.js`
+Every `<fieldset>` is wrapped in a `Field` component to handle the common display of label, error message and input.
 
-```javascript
-import { createActions } from 'redux-async-generator/async-form';
-
-export const { requested, failed, succeeded, change, actions } = createActions('FORM');
-```
-
-#### `form.reducer.js`
-
-```javascript
-import { createReducer } from 'redux-async-generator/async-form';
-import { actions } from './form.actions.js';
-
-const defaultData = {
-    username: '',
-    password: ''
-};
-
-function validate({ username, password }, requested) {
-    // only run validation once the form was attempted to submit
-    return {
-        username: requested && !username && 'The username is required',
-        password: requested && !password && 'The password is required'
-    };
-}
-
-export default createReducer(defaultData, actions, validate);
-```
-
-### `Field.js`
+#### `Field.js`
 
 ```javascript
 class Field extends React.PureComponent {
@@ -302,7 +278,68 @@ class Field extends React.PureComponent {
 }
 ```
 
-### `Form.js`
+#### `form.actions.js`
+
+```javascript
+import { createActions } from 'redux-async-generator/form';
+
+export const { submitted, failed, succeeded, change, actions } = createActions('FORM');
+```
+
+#### `form.reducer.js`
+
+Initial form state, validation and state updates are handled here. If no custom state behavior is needed, you can use default `createReducer` from `form`.
+
+```javascript
+import { createReducer } from 'redux-async-generator/form';
+import { actions } from './form.actions.js';
+
+const defaultData = {
+    username: '',
+    password: ''
+};
+
+function validate({ username, password }, submitted) {
+    // only run validation once the form was attempted to submit
+    return {
+        username: submitted && !username && 'The username is required',
+        password: submitted && !password && 'The password is required'
+    };
+}
+
+export default createReducer(defaultData, actions, validate);
+```
+
+#### `form.selectors.js`
+
+```javascript
+export function form(state) {
+    const result = // find in whole reducer state the form reducer state;
+    return result;
+}
+```
+
+#### `form.container.js`
+
+Now we need to connect the `Form` component with the redux store for the form state (data + validation) and the actions it can trigger (change -to update a field value- and submitted -to send the data to the server-).
+
+```javascript
+import { connect } from 'react-redux';
+import { form } from './form.selectors';
+import { change, submitted } from './form.actions';
+import Form from './Form';
+
+const mapStateToProps = form;
+
+const mapDispatchToProps = { change, submitted };
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Form);
+```
+
+#### `Form.js`
 
 ```javascript
 class Form extends React.PureComponent {
@@ -336,7 +373,7 @@ class Form extends React.PureComponent {
 }
 ```
 
-Async Form extends the behavior from Async Data, so `requested`, `failed` and `succeeded` methods apply as well to tell the reducer the form was requested, failed or succeeded.
+So far, the validation rules
 
 #### `form.sagas.js`
 
