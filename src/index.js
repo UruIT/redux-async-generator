@@ -1,3 +1,4 @@
-import * as asyncData from './async-data'
+import * as asyncData from './async-data';
+import * as form from './form';
 
-export { asyncData }
+export { asyncData, form };

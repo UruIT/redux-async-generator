@@ -1,36 +1,24 @@
-import merge from 'merge'
+import merge from 'merge';
+import {
+	actionTypes as defaultActionTypes,
+	createActions as defaultCreateActions,
+	createActionTypes
+} from '../utils/actions';
 
-export const actionTypes = ['REQUESTED', 'RETRY', 'SUCCEEDED', 'FAILED', 'REPLACE', 'RESET']
-
-export const createActionTypes = (actionTypes, prefix) =>
-	actionTypes.reduce((res, k) => ({ ...res, [k]: `${prefix}_${k}` }), {})
+export const actionTypes = ['REQUESTED', 'RETRY', ...defaultActionTypes];
 
 export const createActions = prefix => {
-	const actions = createActionTypes(actionTypes, prefix)
+	const actions = createActionTypes(actionTypes, prefix);
 	return {
+		...defaultCreateActions(prefix),
 		requested: params =>
 			merge.recursive(true, params, {
 				type: actions.REQUESTED
 			}),
-		retry: params => ({
-			...params,
-			type: actions.RETRY
-		}),
-		succeeded: data => ({
-			type: actions.SUCCEEDED,
-			data
-		}),
-		failed: error => ({
-			type: actions.FAILED,
-			error
-		}),
-		replace: state => ({
-			type: actions.REPLACE,
-			state
-		}),
-		reset: () => ({
-			type: actions.RESET
-		}),
+		retry: params =>
+			merge.recursive(true, params, {
+				type: actions.RETRY
+			}),
 		actions
-	}
-}
+	};
+};
